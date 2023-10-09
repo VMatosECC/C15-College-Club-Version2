@@ -48,7 +48,8 @@ public:
 		setClubNamePtr(clubNamePtrValue);
 		setVectorStudentPtr(vsValue);
 	}
-	//
+
+	//Destructor
 	~Club()
 	{
 		cout << "\nClub destructor called ++++++++++++++++++++\n";
@@ -124,12 +125,12 @@ public:
 	}
 
 	//Look for a club member. If found return its pointer (or nullptr otherwise)
-	Student* findClubMemberPtr(string salutValue, string nameValue)
+	Student* findClubMemberPtr(string idValue)
 	{
 		Student* ptr = nullptr;
 		for (Student* ptr : vs)
 		{
-			if (ptr->getID() == salutValue && ptr->getName() == nameValue)
+			if (ptr->getID() == idValue)
 				return ptr;
 		}
 		return ptr;

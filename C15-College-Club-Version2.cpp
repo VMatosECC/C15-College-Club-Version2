@@ -7,13 +7,54 @@
 using namespace std;
 
 void experiment01();
+void experiment02();
 
 int main()
 {
-	experiment01();
-    cout << "Hello World!\n";
-}
+	//experiment01();
+	experiment02();
 
+    cout << "All done!\n";
+}
+//----------------------------------------------------------------------------
+void experiment02()
+{
+	// We do NOT want to delete these objects until the app is over
+    // they do not belong to us. We'll work with clones of these objects.
+	Student* p1 = new Student("S0111", "Mr. One", "Sociology", 3.1);
+	Student* p2 = new Student("S0222", "Ms. Two", "Mathematics", 3.2);
+	Student* p3 = new Student("S0333", "Mr. Three", "Computer Sc.", 3.3);
+	Student* p4 = new Student("S0444", "Mrs. Four", "Music", 3.4);
+
+
+	vector<Student*> sdb{ p1, p2, p3, p4, };
+
+	//Create a club object
+	Club c1(new string("Photography Club"), vector<Student*> {p1, p2, p3});
+	cout << "Step1 - show c1 the photography club\n" << c1.toString() << endl;
+
+	//new club c2 begins to operate with each member of c1 (photography)
+	Club c2 = c1;  //expecting to use the copy-constructor, overloaded operator=
+	c2.setClubNamePtr(new string("Poetry"));
+	cout << "Step2 - show c2 the Poetry club\n" << c2.toString() << endl;
+
+	//is Mrs. Four (S0444) a member of the poetry club?
+	Student* poetAddress = c2.findClubMemberPtr("S0444");
+	if (poetAddress == nullptr)
+	{
+		//add Mrs Four
+		c2.addNewMemberPtr(p4);
+	}
+
+	cout << "Step3 - after adding Mrs. Four - Show c2 \n" << c2.toString() << endl;
+
+	//destroy original database 
+	cout << "Step4 - Deleting original objects\n";
+	for (Student* p : sdb) {
+		delete sdb.back();
+		sdb.pop_back();
+	}
+}
 
 //---------------------------------------------------------------------------
 void experiment01()
@@ -46,15 +87,6 @@ void experiment01()
 
 	//Reload v1 with p1, p2, and p3.
 	v1.push_back(p1); v1.push_back(p2); v1.push_back(p3);
-
-	////Housekeeping - one-by-one the list of unwanted objects is removed
-	//cout << "\nDeleting...\n";
-	//while (!v1.empty()) {
-	//	Student* pLast = v1[v1.size() - 1];
-	//	v1.pop_back();
-	//	delete pLast;
-	//}
-	////at this point v1 is empty and pointed objects are deleted (for real!)
 
 	//create vector v2
 	cout << "\nStep 3 - Holds four, five, and six\n";
@@ -125,13 +157,32 @@ void experiment01()
 
 
 
-	////Testing operator<<
-	//cout << "\noverloaded<< c1 \n" << c1 << endl;
+	//Testing operator<<
+	cout << "\noverloaded operator<< c1 \n" << c1 << endl;
 
-	////Testing findClubMemberPtr function
-	//cout << "\nTesting findClubMemberPtr\n";
-	//Student* memAddress = c1.findClubMemberPtr("Mr.", "Kodak");
-	//cout << " Loc. Mr. Kodak is: " << memAddress << endl;
+	//Testing findClubMemberPtr function
+	cout << "\nTesting findClubMemberPtr\n";
+	Student* memAddress = c1.findClubMemberPtr("S1444");
+	cout << " Pointer to Ms. Kodak (S1444) is: " << memAddress << endl;
+
+	//Housekeeping - get rid of idle objects sitting on the heap
+	cout << "\nFinal Deleting of original objects p1, p2, ..., p10\n";
+	vector<Student*> v3{ p1, p2, p3, p4, p5, p6, p7, p8, p9, p10 };
+	while (!v3.empty()) {
+		Student* pLast = v3.back();
+
+		try
+		{
+			if ( dynamic_cast<Student*>(pLast) != nullptr ) { delete (Student*)pLast; }
+		}
+		catch (const exception& e)
+		{
+			//Do nothing - must likely this object is on the stack
+		}
+		v3.pop_back();
+    }
+
+  
 
 }
 
